@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Consulta Mercado Livre</title>
+  <style>
+    :root {
+      --primary-color: #ffe600;
+      --secondary-color: #0033a0;
+      --text-color: #333;
+      --border-radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: white;
+      max-width: 500px;
+      width: 90%;
+      padding: 30px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--secondary-color);
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid var(--primary-color);
+      border-radius: var(--border-radius);
+      margin-bottom: 15px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: var(--primary-color);
+      color: var(--secondary-color);
+      border: none;
+      padding: 12px 20px;
+      width: 100%;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #ffd000;
+    }
+
+    #resultado {
+      margin-top: 20px;
+    }
+
+    #resultado div {
+      background-color: #f0f8ff;
+      padding: 10px;
+      border-radius: var(--border-radius);
+      margin-bottom: 10px;
+      color: var(--text-color);
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Consulta Mercado Livre</h1>
+    <input type="text" id="linkInput" placeholder="Cole o link do produto aqui" />
+    <button onclick="consultar()">Consultar</button>
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    async function consultar() {
+      const link = document.getElementById("linkInput").value;
+      const resultado = document.getElementById("resultado");
+      resultado.innerHTML = "<div>Consultando...</div>";
+
+      try {
+        const res = await fetch(`/scrape/?url=${encodeURIComponent(link)}`);
+        if (!res.ok) throw new Error(`Erro ${res.status}`);
+        const data = await res.json();
+
+        if (data.Erro) {
+          resultado.innerHTML = `<div class="error">${data.Erro}</div>`;
+          return;
+        }
+
+        resultado.innerHTML = `
+          <div><strong>Título:</strong> ${data.Título || "N/A"}</div>
+          <div><strong>Preço:</strong> ${data.Preço || "N/A"}</div>
+          <div><strong>Vendidos:</strong> ${data.Vendidos || "N/A"}</div>
+          <div><strong>Data do Anúncio:</strong> ${data.DataInicio || "N/A"}</div>
+        `;
+      } catch (err) {
+        console.error(err);
+        resultado.innerHTML = `<div class="error">Erro: ${err.message}</div>`;
+      }
+    }
+  </script>
+</body>
+</html>
