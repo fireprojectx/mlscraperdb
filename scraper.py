@@ -15,24 +15,24 @@ def extrair_dados_produto(url):
     titulo_tag = soup.find("h1", class_="ui-pdp-title")
     titulo = titulo_tag.get_text(strip=True) if titulo_tag else "Não encontrado"
 
-    # Preço via meta tag
+    # Preço
     meta_price_tag = soup.find("meta", itemprop="price")
     preco = f'R${meta_price_tag["content"]}' if meta_price_tag else "Não encontrado"
 
-    # Vendidos (refinado para evitar 'vendido por')
+    # Vendidos
     vendidos_tag = soup.find("span", string=re.compile(r"[0-9].*vendid", re.I))
     vendidos = vendidos_tag.get_text(strip=True) if vendidos_tag else "Não encontrado"
 
-    # Data de início (startTime embutido em script JSON)
+    # startTime no script da página
     starttime = "Não encontrado"
-    match = re.search(r'"startTime"\\s*:\\s*"([^"]+)"', resposta.text)
+    match = re.search(r'"startTime"\s*:\s*"([^"]+)"', resposta.text)
     if match:
         raw_date = match.group(1)
         try:
             data_obj = datetime.strptime(raw_date, "%Y-%m-%dT%H:%M:%SZ")
-            starttime = data_obj.strftime("%d/%m/%Y")  # agora com ano completo
+            starttime = data_obj.strftime("%d/%m/%Y")
         except ValueError:
-            starttime = raw_date  # fallback bruto
+            starttime = raw_date
 
     return {
         "Título": titulo,
