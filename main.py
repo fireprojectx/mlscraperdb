@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from scraper import extrair_dados_produto
+import os
+
 
 app = FastAPI()
 
