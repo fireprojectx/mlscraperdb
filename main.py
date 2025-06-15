@@ -9,8 +9,9 @@ app = FastAPI()
 @app.get("/scrape/")
 def scrape_product(url: str):
     try:
-        return extrair_dados_produto(url)
-        salvar_no_banco(data, url)
+        data = extrair_dados_produto(url) 
+        salvar_no_banco(data, url)         
+        return data                         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
