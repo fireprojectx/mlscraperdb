@@ -45,6 +45,7 @@ def salvar_no_banco(dados, url):
     conn.close()
 
 
+
 @app.get("/historico")
 def obter_historico():
     try:
@@ -67,4 +68,6 @@ def obter_historico():
         return JSONResponse(content=dados)
     except Exception as e:
         return JSONResponse(status_code=500, content={"erro": str(e)})
+
+
 
