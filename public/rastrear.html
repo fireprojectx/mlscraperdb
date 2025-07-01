@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <title>Rastreamento de Vendas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fafafa;
+      padding: 30px;
+      color: #333;
+    }
+    h1 {
+      color: #0033a0;
+    }
+    #grafico {
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Rastreamento de Vendas</h1>
+  <div id="info"></div>
+  <div id="grafico">Carregando dados...</div>
+
+  <script>
+    async function carregarDados() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id');
+      if (!id) {
+        document.getElementById("grafico").innerText = "ID do produto não fornecido.";
+        return;
+      }
+
+      const res = await fetch(`/historico?id=${id}`);
+      const data = await res.json();
+
+      if (!Array.isArray(data) || data.length === 0) {
+        document.getElementById("grafico").innerText = "Nenhum dado encontrado.";
+        return;
+      }
+
+      let html = '<ul>';
+      data.forEach(entry => {
+        html += `<li><strong>${entry.data}</strong>: ${entry.vendas} vendas</li>`;
+      });
+      html += '</ul>';
+      document.getElementById("grafico").innerHTML = html;
+    }
+
+    carregarDados();
+  </script>
+</body>
+</html>

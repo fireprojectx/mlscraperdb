@@ -110,6 +110,16 @@
         }
 
         resultado.innerHTML = `
+          <div><strong>Título:
+        const idProduto = link.match(/MLB-\d+/)?.[0] || '';
+        if (idProduto) {
+          const btnRastrear = document.createElement('button');
+          btnRastrear.textContent = 'Rastrear este Produto';
+          btnRastrear.onclick = () => window.location.href = `/rastrear.html?id=${idProduto}`;
+          resultado.appendChild(btnRastrear);
+        }
+
+
           <div><strong>Título:</strong> ${data.Título || "N/A"}</div>
           <div><strong>Preço:</strong> ${data.Preço || "N/A"}</div>
           <div><strong>Vendidos:</strong> ${data.Vendidos || "N/A"}</div>
