@@ -110,21 +110,22 @@
         }
 
         resultado.innerHTML = `
-          <div><strong>Título:
-        const idProduto = link.match(/MLB-\d+/)?.[0] || '';
-        if (idProduto) {
-          const btnRastrear = document.createElement('button');
-          btnRastrear.textContent = 'Rastrear este Produto';
-          btnRastrear.onclick = () => window.location.href = `/rastrear.html?id=${idProduto}`;
-          resultado.appendChild(btnRastrear);
-        }
-
-
           <div><strong>Título:</strong> ${data.Título || "N/A"}</div>
           <div><strong>Preço:</strong> ${data.Preço || "N/A"}</div>
           <div><strong>Vendidos:</strong> ${data.Vendidos || "N/A"}</div>
           <div><strong>Data do Anúncio:</strong> ${data.DataInicio || "N/A"}</div>
         `;
+
+        // Adiciona o botão para rastrear
+        const idProduto = link.match(/MLB-\d+/)?.[0] || '';
+        if (idProduto) {
+          const btnRastrear = document.createElement('button');
+          btnRastrear.textContent = 'Rastrear este Produto';
+          btnRastrear.style.marginTop = '10px';
+          btnRastrear.onclick = () => window.location.href = `/rastrear.html?id=${idProduto}`;
+          resultado.appendChild(btnRastrear);
+        }
+
       } catch (err) {
         console.error(err);
         resultado.innerHTML = `<div class="error">Erro: ${err.message}</div>`;
