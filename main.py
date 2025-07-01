@@ -1,12 +1,15 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
-from scraper import extrair_dados_produto
-import os
 from fastapi.responses import JSONResponse
+from scraper import extrair_dados_produto
 from db import get_connection
+import os
 
 app = FastAPI()
 
+# ------------------------------
+# Rota principal de scraping
+# ------------------------------
 @app.get("/scrape/")
 def scrape_product(url: str):
     try:
@@ -16,14 +19,9 @@ def scrape_product(url: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Serve frontend
-app.mount("/", StaticFiles(directory="public", html=True), name="static")
-
-
-
-# Inserção no banco após scraping
-from db import get_connection
-
+# ------------------------------
+# Salva no banco
+# ------------------------------
 def salvar_no_banco(dados, url):
     conn = get_connection()
     cur = conn.cursor()
@@ -44,10 +42,11 @@ def salvar_no_banco(dados, url):
     cur.close()
     conn.close()
 
-
-
+# ------------------------------
+# Rota para histórico de produto
+# ------------------------------
 @app.get("/historico")
-def obter_historico():
+def obter_historico(id: str):
     try:
         conn = get_connection()
         cur = conn.cursor()
@@ -55,19 +54,26 @@ def obter_historico():
         cur.execute("""
             SELECT titulo, preco, vendidos, data_inicio, data_consulta, url
             FROM consultas
-            ORDER BY data_consulta DESC
-        """)
+            WHERE url LIKE %s
+            ORDER BY data_consulta ASC
+        """, (f"%{id}%",))
+
         rows = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        if not rows:
+            return JSONResponse(content=[], status_code=200)
 
         colunas = [desc[0] for desc in cur.description]
         dados = [dict(zip(colunas, linha)) for linha in rows]
 
-        cur.close()
-        conn.close()
-
         return JSONResponse(content=dados)
+
     except Exception as e:
         return JSONResponse(status_code=500, content={"erro": str(e)})
 
-
-
+# ------------------------------
+# Servir arquivos estáticos (frontend)
+# ------------------------------
+app.mount("/", StaticFiles(directory="public", html=True), name="static")
