@@ -3,6 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from scraper import extrair_dados_produto
 from db import get_connection
+from datetime import datetime
 import os
 
 app = FastAPI()
@@ -22,25 +23,31 @@ def scrape_product(url: str):
 # ------------------------------
 # Salva no banco
 # ------------------------------
+
 def salvar_no_banco(dados, url):
     conn = get_connection()
     cur = conn.cursor()
+
+    data_agora = datetime.now()  # pega data e hora atual
+
     cur.execute(
         """
-        INSERT INTO consultas (url, titulo, preco, vendidos, data_inicio)
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO consultas (url, titulo, preco, vendidos, data_inicio, data_consulta)
+        VALUES (%s, %s, %s, %s, %s, %s)
         """,
         (
             url,
             dados.get("Título"),
             dados.get("Preço"),
             dados.get("Vendidos"),
-            dados.get("DataInicio")
+            dados.get("DataInicio"),
+            data_agora  # nova coluna
         )
     )
     conn.commit()
     cur.close()
     conn.close()
+
 
 # ------------------------------
 # Rota para histórico de produto
