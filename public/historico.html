@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Histórico de Consultas - Mercado Livre</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', sans-serif;
@@ -47,15 +48,6 @@
             background-color: #f1f1f1;
         }
 
-        a {
-            color: #0033a0;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
         .footer {
             text-align: center;
             margin-top: 30px;
@@ -74,11 +66,18 @@
         .btn-voltar:hover {
             background-color: #ffdb00;
         }
+
+        canvas {
+            margin-top: 40px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Histórico de Consultas</h1>
+
+        <canvas id="graficoVendas" height="100"></canvas>
+
         <table>
             <thead>
                 <tr>
@@ -94,6 +93,7 @@
                 <tr><td colspan="6">Carregando dados...</td></tr>
             </tbody>
         </table>
+
         <div class="footer">
             <br>
             <a href="/"><button class="btn-voltar">Voltar</button></a>
@@ -101,9 +101,20 @@
     </div>
 
     <script>
+        function getParametroUrl(nome) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(nome);
+        }
+
         async function carregarHistorico() {
+            const id = getParametroUrl("id");
+            if (!id) {
+                alert("ID do produto não informado na URL.");
+                return;
+            }
+
             try {
-                const res = await fetch("/historico");
+                const res = await fetch(`/historico?id=${id}`);
                 const dados = await res.json();
 
                 const tbody = document.getElementById("tabela-dados");
@@ -113,6 +124,9 @@
                     tbody.innerHTML = "<tr><td colspan='6'>Nenhum dado encontrado.</td></tr>";
                     return;
                 }
+
+                const labels = [];
+                const vendidos = [];
 
                 dados.forEach(item => {
                     const row = `
@@ -126,7 +140,48 @@
                         </tr>
                     `;
                     tbody.innerHTML += row;
+
+                    // Gráfico
+                    labels.push(new Date(item.data_consulta).toLocaleDateString());
+                    vendidos.push(item.vendidos);
                 });
+
+                // Gráfico de linhas com Chart.js
+                const ctx = document.getElementById('graficoVendas').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Evolução das Vendas',
+                            data: vendidos,
+                            borderColor: '#0033a0',
+                            backgroundColor: 'rgba(0, 51, 160, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Vendas'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Data da Consulta'
+                                }
+                            }
+                        }
+                    }
+                });
+
             } catch (erro) {
                 console.error("Erro ao carregar histórico:", erro);
                 document.getElementById("tabela-dados").innerHTML = "<tr><td colspan='6'>Erro ao carregar histórico.</td></tr>";
