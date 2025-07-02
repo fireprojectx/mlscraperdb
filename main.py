@@ -59,7 +59,7 @@ def obter_historico(id: str):
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT titulo, preco, vendidos, data_inicio, data_consulta, url
+            SELECT data_consulta, vendidos
             FROM consultas
             WHERE url LIKE %s
             ORDER BY data_consulta ASC
@@ -72,8 +72,7 @@ def obter_historico(id: str):
         if not rows:
             return JSONResponse(content=[], status_code=200)
 
-        colunas = [desc[0] for desc in cur.description]
-        dados = [dict(zip(colunas, linha)) for linha in rows]
+        dados = [{"data_consulta": str(row[0]), "vendidos": row[1]} for row in rows]
 
         return JSONResponse(content=dados)
 
