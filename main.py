@@ -53,17 +53,17 @@ def salvar_no_banco(dados, url):
 # Rota para histórico de produto
 # ------------------------------
 @app.get("/historico")
-def obter_historico(id: str):
+def obter_historico(url: str):
     try:
         conn = get_connection()
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT data_consulta, vendidos
+            SELECT titulo, preco, vendidos, data_inicio, data_consulta, url
             FROM consultas
-            WHERE url LIKE %s
+            WHERE url = %s
             ORDER BY data_consulta ASC
-        """, (f"%{id}%",))
+        """, (url,))
 
         rows = cur.fetchall()
         cur.close()
@@ -72,7 +72,17 @@ def obter_historico(id: str):
         if not rows:
             return JSONResponse(content=[], status_code=200)
 
-        dados = [{"data_consulta": str(row[0]), "vendidos": row[1]} for row in rows]
+        dados = [
+            {
+                "titulo": row[0],
+                "preco": row[1],
+                "vendidos": row[2],
+                "data_inicio": row[3],
+                "data_consulta": str(row[4]),
+                "url": row[5]
+            }
+            for row in rows
+        ]
 
         return JSONResponse(content=dados)
 
