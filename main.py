@@ -47,24 +47,7 @@ def salvar_no_banco(dados, url):
     conn.commit()
     cur.close()
     conn.close()
-# ------------------------------
-# deletar coluna 'data'
-# ------------------------------
-def deletar_coluna_data():
-    conn = get_connection()
-    cur = conn.cursor()
 
-    try:
-        cur.execute("ALTER TABLE consultas DROP COLUMN IF EXISTS data")
-        conn.commit()
-        print("Coluna 'data' removida com sucesso.")
-    except Exception as e:
-        print(f"Erro ao remover a coluna: {e}")
-    finally:
-        cur.close()
-        conn.close()
-
-deletar_coluna_data()
 # ------------------------------
 # Rota para histórico de produto
 # ------------------------------
