@@ -46,7 +46,12 @@ def extrair_dados_produto(url):
         avaliacoes = "Não encontrado"
 
     # Estimativa de visitas
-    visitas_estimadas = avaliacoes * 100 + dias_ativo * 5
+    try:
+        avaliacoes_int = int(avaliacoes)
+    except:
+        avaliacoes_int = 0
+    visitas_estimadas = avaliacoes_int * 100 + dias_ativo * 5
+    
 
     # Nota de avaliação
     nota_tag = soup.find("span", class_="ui-pdp-review__rating")
