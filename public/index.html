@@ -91,31 +91,29 @@
         return res.json();
       })
       .then(data => {
-        if (data.Erro) {
-          resultado.innerHTML = `<div class="error">${data.Erro}</div>`;
-        } if (data.Erro) {
-  resultado.innerHTML = `<div class="error">${data.Erro}</div>`;
-        } else {
-          resultado.innerHTML = `
-            <div><strong>Título:</strong> ${data.Título || "N/A"}</div>
-            <div><strong>Preço:</strong> ${data.Preço || "N/A"}</div>
-            <div><strong>Vendidos:</strong> ${data.Vendidos || "N/A"}</div>
-            <div><strong>Data do Anúncio:</strong> ${data.DataInicio || "N/A"}</div>
-            <div><strong>Avaliações:</strong> ${data.Avaliações || "N/A"}</div>
-            <div><strong>Compradores:</strong> ${data.Compradores || "N/A"}</div>
-            <div><strong>Nota:</strong> ${data.Nota || "N/A"}</div>
-            `;
-          }
+  if (data.Erro) {
+    resultado.innerHTML = `<div class="error">${data.Erro}</div>`;
+  } else {
+    resultado.innerHTML = `
+      <div><strong>Título:</strong> ${data.Título || "N/A"}</div>
+      <div><strong>Preço:</strong> ${data.Preço || "N/A"}</div>
+      <div><strong>Vendidos:</strong> ${data.Vendidos || "N/A"}</div>
+      <div><strong>Data do Anúncio:</strong> ${data.DataInicio || "N/A"}</div>
+      <div><strong>Avaliações:</strong> ${data.Avaliações || "N/A"}</div>
+      <div><strong>Compradores:</strong> ${data.Compradores || "N/A"}</div>
+      <div><strong>Nota:</strong> ${data.Nota || "N/A"}</div>
+    `;
 
-        // Mostra o botão "Rastrear" mesmo se faltarem dados como a data de início
-        localStorage.setItem("ultima_url", link);
-        const btn = document.createElement("button");
-        btn.textContent = "Rastrear este Produto";
-        btn.style.marginTop = "10px";
-        btn.onclick = () => window.location.href = `/rastrear.html?url=${encodeURIComponent(link)}`;
-        resultado.appendChild(btn);
+    // Mostra o botão "Rastrear"
+    localStorage.setItem("ultima_url", link);
+    const btn = document.createElement("button");
+    btn.textContent = "Rastrear este Produto";
+    btn.style.marginTop = "10px";
+    btn.onclick = () => window.location.href = `/rastrear.html?url=${encodeURIComponent(link)}`;
+    resultado.appendChild(btn);
+  }
+})
 
-      })
       .catch(err => {
         console.error(err);
         resultado.innerHTML = `<div class="error">Erro: ${err.message}</div>`;
