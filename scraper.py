@@ -26,14 +26,24 @@ def extrair_dados_produto(url):
     # Data de início do anúncio
     starttime = "Não encontrado"
     dias_ativo = 0
+
     match = re.search(r'"startTime"\s*:\s*"([^"]+)"', resposta.text)
     if match:
         raw_date = match.group(1)
         try:
-            data_obj = datetime.strptime(raw_date, "%Y-%m-%dT%H:%M:%SZ")
+            # Tenta com milissegundos e Z
+            data_obj = datetime.strptime(raw_date, "%Y-%m-%dT%H:%M:%S.%fZ")
+        except ValueError:
+            try:
+                # Tenta sem milissegundos
+                data_obj = datetime.strptime(raw_date, "%Y-%m-%dT%H:%M:%SZ")
+            except ValueError:
+                data_obj = None
+
+        if data_obj:
             starttime = data_obj.strftime("%d/%m/%Y")
             dias_ativo = (datetime.utcnow() - data_obj).days + 1
-        except ValueError:
+        else:
             starttime = raw_date
 
     # Avaliações
