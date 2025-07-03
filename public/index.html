@@ -103,14 +103,13 @@
         }
 
         // Mostra o botão "Rastrear" mesmo se faltarem dados como a data de início
-        const idProduto = link.match(/MLB-\d+/)?.[0];
-        if (idProduto) {
-          const btn = document.createElement("button");
-          btn.textContent = "Rastrear este Produto";
-          btn.style.marginTop = "10px";
-          btn.onclick = () => window.location.href = `/rastrear.html?id=${idProduto}`;
-          resultado.appendChild(btn);
-        }
+        localStorage.setItem("ultima_url", link);
+        const btn = document.createElement("button");
+        btn.textContent = "Rastrear este Produto";
+        btn.style.marginTop = "10px";
+        btn.onclick = () => window.location.href = `/rastrear.html?url=${encodeURIComponent(link)}`;
+        resultado.appendChild(btn);
+
       })
       .catch(err => {
         console.error(err);
