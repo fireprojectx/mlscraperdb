@@ -25,12 +25,14 @@ def extrair_dados_produto(url):
 
     # Data de início do anúncio
     starttime = "Não encontrado"
+    dias_ativo = 0
     match = re.search(r'"startTime"\s*:\s*"([^"]+)"', resposta.text)
     if match:
         raw_date = match.group(1)
         try:
             data_obj = datetime.strptime(raw_date, "%Y-%m-%dT%H:%M:%SZ")
             starttime = data_obj.strftime("%d/%m/%Y")
+            dias_ativo = (datetime.utcnow() - data_obj).days + 1
         except ValueError:
             starttime = raw_date
 
@@ -43,9 +45,8 @@ def extrair_dados_produto(url):
     else:
         avaliacoes = "Não encontrado"
 
-    # Compradores
-    compradores_tag = soup.find("p", class_=re.compile(r"ui-pdp-subtitle"))
-    compradores = compradores_tag.get_text(strip=True) if compradores_tag else "Não encontrado"
+    # Estimativa de visitas
+    visitas_estimadas = avaliacoes * 100 + dias_ativo * 5
 
     # Nota de avaliação
     nota_tag = soup.find("span", class_="ui-pdp-review__rating")
@@ -58,5 +59,5 @@ def extrair_dados_produto(url):
         "DataInicio": starttime,
         "Avaliações": avaliacoes,
         "Nota": nota_avaliacao,
-        "Compradores": compradores
+        "Visitas": str(visitas_estimadas)
     }
