@@ -45,12 +45,22 @@ def extrair_dados_produto(url):
     else:
         avaliacoes = "Não encontrado"
 
-    # Estimativa de visitas
+   # Conversão de avaliações para inteiro
     try:
         avaliacoes_int = int(avaliacoes)
     except:
         avaliacoes_int = 0
-    visitas_estimadas = avaliacoes_int * 100 + dias_ativo * 5
+
+    # Conversão de vendidos para inteiro (extração do número bruto de "+50 vendidos")
+    vendidos_int = 0
+    if vendidos != "Não encontrado":
+        match = re.search(r"(\d+)", vendidos.replace(".", ""))
+        if match:
+            vendidos_int = int(match.group(1))
+
+    # Estimativa mais realista de visitas
+    visitas_estimadas = vendidos_int * 50 + avaliacoes_int * 100
+
     
 
     # Nota de avaliação
