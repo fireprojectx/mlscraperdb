@@ -23,7 +23,7 @@ def extrair_dados_produto(url):
     vendidos_tag = soup.find("span", string=re.compile(r"[0-9].*vendid", re.I))
     vendidos = vendidos_tag.get_text(strip=True) if vendidos_tag else "Não encontrado"
 
-    # startTime no script da página
+    # Data de início do anúncio
     starttime = "Não encontrado"
     match = re.search(r'"startTime"\s*:\s*"([^"]+)"', resposta.text)
     if match:
@@ -37,17 +37,17 @@ def extrair_dados_produto(url):
     # Avaliações
     avaliacoes_tag = soup.find("span", class_="ui-pdp-review__amount")
     if avaliacoes_tag:
-            avaliacoes_texto = avaliacoes_tag.get_text(strip=True)
-            match = re.search(r"\((\d+)\)", avaliacoes_texto)
-            avaliacoes = match.group(1) if match else "Não encontrado"
-        else:
-            avaliacoes = "Não encontrado"
+        avaliacoes_texto = avaliacoes_tag.get_text(strip=True)
+        match = re.search(r"\((\d+)\)", avaliacoes_texto)
+        avaliacoes = match.group(1) if match else "Não encontrado"
+    else:
+        avaliacoes = "Não encontrado"
 
-    # Compradores (ex: “Mais de 100 pessoas compraram”)
+    # Compradores
     compradores_tag = soup.find("p", class_=re.compile(r"ui-pdp-subtitle"))
     compradores = compradores_tag.get_text(strip=True) if compradores_tag else "Não encontrado"
 
-    # Nota média (ex: 4.8)
+    # Nota de avaliação
     nota_tag = soup.find("p", class_="ui-review-capability__rating__average")
     nota_avaliacao = nota_tag.get_text(strip=True) if nota_tag else "Não encontrado"
 
