@@ -34,13 +34,22 @@ def extrair_dados_produto(url):
         except ValueError:
             starttime = raw_date
 
-    # Avaliações (quantidade de reviews ou estrelas)
-    avaliacoes_tag = soup.find("span", class_=re.compile(r"ui-review-capability__rating__average"))
-    avaliacoes = avaliacoes_tag.get_text(strip=True) if avaliacoes_tag else "Não encontrado"
+    # Avaliações
+    avaliacoes_tag = soup.find("span", class_="ui-pdp-review__amount")
+    if avaliacoes_tag:
+            avaliacoes_texto = avaliacoes_tag.get_text(strip=True)
+            match = re.search(r"\((\d+)\)", avaliacoes_texto)
+            avaliacoes = match.group(1) if match else "Não encontrado"
+        else:
+            avaliacoes = "Não encontrado"
 
     # Compradores (ex: “Mais de 100 pessoas compraram”)
     compradores_tag = soup.find("p", class_=re.compile(r"ui-pdp-subtitle"))
     compradores = compradores_tag.get_text(strip=True) if compradores_tag else "Não encontrado"
+
+    # Nota média (ex: 4.8)
+    nota_tag = soup.find("p", class_="ui-review-capability__rating__average")
+    nota_avaliacao = nota_tag.get_text(strip=True) if nota_tag else "Não encontrado"
 
     return {
         "Título": titulo,
@@ -48,5 +57,6 @@ def extrair_dados_produto(url):
         "Vendidos": vendidos,
         "DataInicio": starttime,
         "Avaliações": avaliacoes,
+        "Nota": nota_avaliacao,
         "Compradores": compradores
     }
