@@ -48,7 +48,7 @@ def extrair_dados_produto(url):
     compradores = compradores_tag.get_text(strip=True) if compradores_tag else "Não encontrado"
 
     # Nota de avaliação
-    nota_tag = soup.find("p", class_="ui-review-capability__rating__average")
+    nota_tag = soup.find("span", class_="ui-pdp-review__rating")
     nota_avaliacao = nota_tag.get_text(strip=True) if nota_tag else "Não encontrado"
 
     return {
