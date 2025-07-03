@@ -16,9 +16,6 @@
     #grafico {
       margin-top: 30px;
     }
-    canvas {
-      max-width: 100%;
-    }
     #sugestao {
       margin-top: 10px;
       color: gray;
@@ -30,18 +27,13 @@
   <h1>Rastreamento de Vendas</h1>
   <div id="info"></div>
   <div id="grafico">Carregando dados...</div>
-  <canvas id="chartCanvas" height="200"></canvas>
   <div id="sugestao"></div>
-
-  <!-- Chart.js CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <script>
     async function carregarDados() {
       const params = new URLSearchParams(window.location.search);
       const url = params.get('url');
       const grafico = document.getElementById("grafico");
-      const canvas = document.getElementById("chartCanvas");
       const sugestao = document.getElementById("sugestao");
 
       if (!url) {
@@ -62,55 +54,23 @@
           return;
         }
 
-        // Salva a URL como sugestão
         const urlSalva = data[0]?.url;
         if (urlSalva) {
           localStorage.setItem("ultima_url", urlSalva);
           sugestao.innerHTML = `🔁 Última URL consultada: <a href="/?url=${encodeURIComponent(urlSalva)}">${urlSalva}</a>`;
         }
 
-        // Calcular diferenças
         let html = '<ul>';
-        const labels = [];
-        const valores = [];
         for (let i = 0; i < data.length; i++) {
           const entry = data[i];
-          const dataStr = entry.data_consulta?.split(" ")[0] || entry.data || `Dia ${i + 1}`;
+          const dataStr = entry.data_consulta?.split(" ")[0] || `Dia ${i + 1}`;
           const vendas = entry.vendidos ?? 0;
           const anterior = i > 0 ? data[i - 1].vendidos : vendas;
           const diferenca = vendas - anterior;
-          labels.push(dataStr);
-          valores.push(vendas);
           html += `<li><strong>${dataStr}</strong>: ${vendas} vendas (${diferenca >= 0 ? "+" : ""}${diferenca})</li>`;
         }
         html += '</ul>';
         grafico.innerHTML = html;
-
-        // Gráfico
-        new Chart(canvas, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: 'Vendas',
-              data: valores,
-              borderColor: '#0033a0',
-              backgroundColor: 'rgba(0, 51, 160, 0.1)',
-              tension: 0.3,
-              fill: true
-            }]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { display: false },
-              title: { display: true, text: 'Evolução das Vendas' }
-            },
-            scales: {
-              y: { beginAtZero: true }
-            }
-          }
-        });
 
       } catch (error) {
         console.error(error);
