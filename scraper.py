@@ -59,7 +59,7 @@ def extrair_dados_produto(url):
             vendidos_int = int(match.group(1))
 
     # Estimativa mais realista de visitas
-    visitas_estimadas = vendidos_int * 50 + avaliacoes_int * 100
+    visitas_estimadas = vendidos_int * 50 + avaliacoes_int * 100 + dias_ativo
 
     
 
