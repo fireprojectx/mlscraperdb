@@ -24,7 +24,7 @@ def extrair_dados_produto(url):
     vendidos = vendidos_tag.get_text(strip=True) if vendidos_tag else "Não encontrado"
 
     # Data de início do anúncio
-    starttime = "Não encontrado"
+    starttime = None
     dias_ativo = 0
 
     match = re.search(r'"startTime"\s*:\s*"([^"]+)"', resposta.text)
@@ -44,7 +44,7 @@ def extrair_dados_produto(url):
             starttime = data_obj.strftime("%d/%m/%Y")
             dias_ativo = (datetime.utcnow() - data_obj).days + 1
         else:
-            starttime = raw_date
+            starttime = None
 
     # Avaliações
     avaliacoes_tag = soup.find("span", class_="ui-pdp-review__amount")
