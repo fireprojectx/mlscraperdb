@@ -98,7 +98,7 @@ def obter_urls_com_datas():
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT url, MIN(data_consulta) AS primeira_consulta
+            SELECT url, MAX(data_consulta) AS primeira_consulta
             FROM consultas
             GROUP BY url
             ORDER BY primeira_consulta ASC
