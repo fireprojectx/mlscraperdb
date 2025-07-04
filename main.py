@@ -131,7 +131,7 @@ def obter_todas_consultas():
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT url, data_consulta, titulo, vendidos
+            SELECT url, data_inicio, data_consulta, titulo, vendidos, preco
             FROM consultas
             ORDER BY url, data_consulta ASC
         """)
@@ -140,14 +140,19 @@ def obter_todas_consultas():
         cur.close()
         conn.close()
 
+        def formatar_data(valor):
+            if isinstance(valor, datetime):
+                return valor.strftime("%Y-%m-%d %H:%M:%S")
+            return valor if valor else None
+
         dados = [
             {
                 "url": row[0],
-                "data_inicio": row[1],
-                "data_consulta": row[2].strftime("%Y-%m-%d %H:%M:%S") if isinstance(row[2], datetime) else row[2] if row[2] else None,
+                "data_inicio": formatar_data(row[1]),
+                "data_consulta": formatar_data(row[2]),
                 "titulo": row[3],
                 "vendidos": row[4],
-                "preco": row[5]                
+                "preco": row[5]
             }
             for row in rows
         ]
