@@ -131,7 +131,7 @@ def obter_todas_consultas():
         cur = conn.cursor()
 
         cur.execute("""
-            SELECT url, data_consulta, titulo
+            SELECT url, data_consulta, titulo, vendidos
             FROM consultas
             ORDER BY url, data_consulta ASC
         """)
@@ -154,7 +154,7 @@ def obter_todas_consultas():
 
     except Exception as e:
         return JSONResponse(content={"erro": str(e)}, status_code=500)
-
+        
 # ------------------------------
 # Servir arquivos estáticos (frontend)
 # ------------------------------
