@@ -89,6 +89,40 @@ def obter_historico(url: str):
         return JSONResponse(status_code=500, content={"erro": str(e)})
 
 # ------------------------------
+# consultar urls pesquisadas
+# ------------------------------
+@app.get("/historico_urls")
+def obter_urls_com_datas():
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT url, MIN(data_consulta) AS primeira_consulta
+            FROM consultas
+            GROUP BY url
+            ORDER BY primeira_consulta ASC
+        """)
+
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        dados = [
+            {
+                "url": row[0],
+                "data_consulta": row[1].strftime("%Y-%m-%d %H:%M:%S")
+            }
+            for row in rows
+        ]
+
+        return JSONResponse(content=dados)
+
+    except Exception as e:
+        return JSONResponse(content={"erro": str(e)}, status_code=500)
+
+
+# ------------------------------
 # Servir arquivos estáticos (frontend)
 # ------------------------------
 app.mount("/", StaticFiles(directory="public", html=True), name="static")
