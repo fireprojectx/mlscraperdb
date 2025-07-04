@@ -144,7 +144,7 @@ def obter_todas_consultas():
             {
                 "url": row[0],
                 "data_inicio": row[1],
-                "data_consulta": row[2].strftime("%Y-%m-%d %H:%M:%S") if row[2] else None,
+                "data_consulta": row[2].strftime("%Y-%m-%d %H:%M:%S") if isinstance(row[2], datetime) else row[2] if row[2] else None,
                 "titulo": row[3],
                 "vendidos": row[4],
                 "preco": row[5]                
