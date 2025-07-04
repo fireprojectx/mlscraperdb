@@ -143,9 +143,11 @@ def obter_todas_consultas():
         dados = [
             {
                 "url": row[0],
-                "data_consulta": row[1].strftime("%Y-%m-%d %H:%M:%S") if row[1] else None,
-                "titulo": row[2],
-                "vendidos": row[3]
+                "data_inicio": row[1],
+                "data_consulta": row[2].strftime("%Y-%m-%d %H:%M:%S") if row[2] else None,
+                "titulo": row[3],
+                "vendidos": row[4],
+                "preco": row[5]                
             }
             for row in rows
         ]
