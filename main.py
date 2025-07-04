@@ -121,6 +121,38 @@ def obter_urls_com_datas():
     except Exception as e:
         return JSONResponse(content={"erro": str(e)}, status_code=500)
 
+# --------------------------
+# Retorna todas as pesquisas
+# --------------------------
+@app.get("/historico_todas_consultas")
+def obter_todas_consultas():
+    try:
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            SELECT url, data_consulta, titulo
+            FROM consultas
+            ORDER BY url, data_consulta ASC
+        """)
+
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        dados = [
+            {
+                "url": row[0],
+                "data_consulta": row[1].strftime("%Y-%m-%d %H:%M:%S") if row[1] else None,
+                "titulo": row[2]
+            }
+            for row in rows
+        ]
+
+        return JSONResponse(content=dados)
+
+    except Exception as e:
+        return JSONResponse(content={"erro": str(e)}, status_code=500)
 
 # ------------------------------
 # Servir arquivos estáticos (frontend)
