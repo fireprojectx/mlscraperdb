@@ -5,7 +5,6 @@ from scraper import extrair_dados_produto
 from db import get_connection
 from datetime import datetime
 import os
-from apscheduler.schedulers.background import BackgroundScheduler
 
 
 app = FastAPI()
@@ -163,40 +162,6 @@ def obter_todas_consultas():
 
     except Exception as e:
         return JSONResponse(content={"erro": str(e)}, status_code=500)
-
-#------------------------------
-
-# Inicia o agendador
-scheduler = BackgroundScheduler()
-scheduler.start()
-
-# Função automática de verificação e nova consulta
-def rotina_reconsulta():
-    print("[AutoTask] Verificando URLs com +30 dias...")
-    try:
-        resposta = requests.get("http://localhost:8000/historico_urls")  # Use o endereço local da API
-        historico = resposta.json()
-        hoje = datetime.utcnow()
-
-        for item in historico:
-            url = item.get("url")
-            data_str = item.get("data_consulta")
-
-            if url and data_str:
-                try:
-                    data_consulta = datetime.strptime(data_str, "%Y-%m-%d %H:%M:%S")
-                    dias = (hoje - data_consulta).days
-                    if dias >= 30:
-                        print(f"[AutoScrape] {url} está com {dias} dias. Reconsultando...")
-                        requests.get("http://localhost:8000/scrape", params={"url": url})
-                except Exception as e:
-                    print(f"[Erro] {url}: {e}")
-    except Exception as e:
-        print(f"[Erro geral na rotina]: {e}")
-
-# Agendar execução diária
-scheduler.add_job(rotina_reconsulta, "interval", days=1)
-
 
         
 # ------------------------------
